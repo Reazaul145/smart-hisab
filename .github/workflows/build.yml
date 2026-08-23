@@ -9,38 +9,39 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-      - uses: actions/setup-java@v3
+      - name: Setup Java
+        uses: actions/setup-java@v3
         with:
           distribution: 'zulu'
           java-version: '17'
 
-      - uses: subosito/flutter-action@v2
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
         with:
           flutter-version: '3.19.6'
           channel: 'stable'
 
-      - name: Build Flutter App Release
+      - name: Create Clean Workspace and Inject Code
         run: |
-          # 1. Create a fresh Flutter template in a separate folder
-          flutter create --project-name smart_hisab --org com.hisabkhata.app app_workspace
+          # 1. Create a fresh standard Android Flutter project
+          flutter create --project-name smart_hisab --org com.hisabkhata.app project_root
           
-          # 2. Copy your custom code and dependencies into the workspace
-          cp pubspec.yaml app_workspace/pubspec.yaml
-          cp lib/main.dart app_workspace/lib/main.dart
+          # 2. Replace with our actual app code and config
+          cp pubspec.yaml project_root/pubspec.yaml
+          cp lib/main.dart project_root/lib/main.dart
           
-          # 3. Navigate and build the APK
-          cd app_workspace
+          # 3. Enter project and fetch dependencies
+          cd project_root
           flutter pub get
-          flutter build apk --release
           
-          # 4. Move output apk to root for upload
-          mkdir -p ../output_apk
-          cp build/app/outputs/flutter-apk/app-release.apk ../output_apk/
+          # 4. Build Release APK
+          flutter build apk --release --no-tree-shake-icons
 
-      - name: Upload APK
+      - name: Upload APK Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release
-          path: output_apk/app-release.apk
+          name: Business-Tracker-Pro-APK
+          path: project_root/build/app/outputs/flutter-apk/app-release.apk
