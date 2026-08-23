@@ -21,21 +21,26 @@ jobs:
           flutter-version: '3.19.6'
           channel: 'stable'
 
-      - name: Generate Android Project Files Safely
+      - name: Build Flutter App Release
         run: |
-          mkdir -p /tmp/backup_lib
-          cp -r lib/* /tmp/backup_lib/
-          flutter create --platforms=android --project-name smart_hisab --org com.hisabkhata.app .
-          cp -r /tmp/backup_lib/* lib/
-
-      - name: Get Dependencies
-        run: flutter pub get
-
-      - name: Build APK
-        run: flutter build apk --release
+          # 1. Create a fresh Flutter template in a separate folder
+          flutter create --project-name smart_hisab --org com.hisabkhata.app app_workspace
+          
+          # 2. Copy your custom code and dependencies into the workspace
+          cp pubspec.yaml app_workspace/pubspec.yaml
+          cp lib/main.dart app_workspace/lib/main.dart
+          
+          # 3. Navigate and build the APK
+          cd app_workspace
+          flutter pub get
+          flutter build apk --release
+          
+          # 4. Move output apk to root for upload
+          mkdir -p ../output_apk
+          cp build/app/outputs/flutter-apk/app-release.apk ../output_apk/
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: app-release
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: output_apk/app-release.apk
