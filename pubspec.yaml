@@ -1,0 +1,19 @@
+name: smart_hisab
+description: A Complete Business Tracker and Reminder App.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.0.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  sqflite: ^2.3.0
+  path: ^1.8.3
+  intl: ^0.19.0
+  url_launcher: ^6.2.5
+  path_provider: ^2.1.2
+
+flutter:
+  uses-material-design: true
